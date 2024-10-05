@@ -11,36 +11,10 @@
   <h1>欢迎来到 PWA 示例</h1>
   <p>这是一个简单的 Progressive Web App 示例。</p>
   <button id="installButton" style="display: none;">安装 PWA</button>
-  <button id="installButton2" style="display: none;">安装 PWA</button>
+
   <script>
 
-    // 监听按钮点击事件
-    document.getElementById('installButton2').addEventListener('click', function() {
-      window.addEventListener('load', function() {
-        let deferredPrompt;
-        const installButton = document.getElementById('installButton');
-
-        window.addEventListener('beforeinstallprompt', function(event) {
-          event.preventDefault();
-          deferredPrompt = event;
-          installButton.style.display = 'block';
-
-          installButton.addEventListener('click', function() {
-            installButton.style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function(choiceResult) {
-              if (choiceResult.outcome === 'accepted') {
-                console.log('用户接受了安装提示');
-              } else {
-                console.log('用户拒绝了安装提示');
-              }
-              deferredPrompt = null;
-            });
-          });
-        });
-      });
-    });
-
+    
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js')
         .then(function(registration) {
@@ -51,7 +25,29 @@
         });
     }
 
+    window.addEventListener('load', function() {
+      let deferredPrompt;
+      const installButton = document.getElementById('installButton');
 
+      window.addEventListener('beforeinstallprompt', function(event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        installButton.style.display = 'block';
+
+        installButton.addEventListener('click', function() {
+          installButton.style.display = 'none';
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function(choiceResult) {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('用户接受了安装提示');
+            } else {
+              console.log('用户拒绝了安装提示');
+            }
+            deferredPrompt = null;
+          });
+        });
+      });
+    });
   </script>
 </body>
 </html>
