@@ -1,14 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8">
-    <title>A2HS demo</title>
-    <link href="style.css" rel="stylesheet">
-    <script src="index.js" defer></script>
-    <link rel="manifest" href="manifest.webmanifest">
+    <title>Test</title>
+    <link rel="manifest" href="./app.webmanifest" />
   </head>
   <body>
-    <img src="images/fox1.jpg" alt="a fox picture">
-    <button class="add-button">Add to home screen</button>
+    <p>
+      If the <code>beforeinstallprompt</code> event fires, there will be a
+      button displayed allowing you to use <code>prompt()</code> on the deferred
+      event.
+    </p>
+    <button hidden>Show Prompt</button>
+    <script>
+      console.log( 'serviceWorker' in navigator )
+      if ('serviceWorker' in navigator) {
+        
+        navigator.serviceWorker.register('./sw.js').then(function(registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(function(error) {
+          console.log('Service Worker registration failed:', error);
+        });;
+
+        window.addEventListener('beforeinstallprompt', event => {
+          console.log( 'beforeinstallprompt' )
+          event.preventDefault();
+          var button = document.querySelector('button');
+          button.removeAttribute('hidden');
+          button.addEventListener('click', () => {
+            event.prompt();
+            button.setAttribute('disabled', true);
+          });
+        });
+      }
+    </script>
   </body>
 </html>
+<!-- https://developer.mozilla.org/zh-CN/docs/Web/Progressive_web_apps/Guides/Installing -->
