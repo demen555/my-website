@@ -1,44 +1,53 @@
-const CACHE_NAME = 'pwa-example-cache-v1';
-const urlsToCache = [
-  './',
-  './index.html',
-  './styles.css',
-  './images/logo.png'
+importScripts('https://cdn.jsdelivr.net/npm/workbox-sw@4.3.1/build/workbox-sw.min.js');
+
+if (workbox) {
+    console.log("Yay! Workbox is loaded 🎉");
+} else {
+    console.log("Boo! Workbox didn't load 😬");
+}
+
+var cacheFiles = [
+    {
+        url: '/Index.html',
+        revision: 'v1' // 加revision，版本改了以後，sw.js 在 application 上會更新
+    }
 ];
+workbox.precaching.precacheAndRoute(cacheFiles);
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
+workbox.routing.registerRoute(
+    'https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css',
+    new workbox.strategies.StaleWhileRevalidate()
+);
+workbox.routing.registerRoute(
+    'https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js',
+    new workbox.strategies.StaleWhileRevalidate()
+);
+workbox.routing.registerRoute(
+    'https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js',
+    new workbox.strategies.StaleWhileRevalidate()
+);
 
-self.addEventListener('activate', function(event) {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+//缓存文件
+workbox.routing.registerRoute(
+    /\.css$/,   //通过正则匹配需要缓存哪些文件
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: 'css-cache-v1'  //缓存名，可在application-> Cache storage下找到
     })
-  );
-});
+);
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
-  );
-});
+workbox.routing.registerRoute(
+    /\.(?:js)$/,
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: 'js-cache-v1'
+    })
+);
+
+workbox.routing.registerRoute(
+    // Cache image files.
+    /\.(?:png|jpg|jpeg|svg|gif)$/,
+    // Use the cache if it's available.
+    new workbox.strategies.CacheFirst({
+        // Use a custom cache name.
+        cacheName: 'image-cache-v1'
+    })
+);
