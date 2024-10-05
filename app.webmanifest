@@ -9,7 +9,7 @@
     "utilities"
   ],
   "scope": "./",
-  "start_url": "/",
+  "start_url": "/app.html",
   "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
