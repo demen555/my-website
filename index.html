@@ -1,37 +1,19 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Test</title>
-    <link rel="manifest" href="./app.webmanifest" />
+    <meta charset="UTF-8" />
+    
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Awesome App</title>
+    <meta name="description" content="My Awesome App description" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#FFFFFF" />
+    <meta name="theme-color" content="#ffffff" />
+    
   </head>
   <body>
-    <p>
-      If the <code>beforeinstallprompt</code> event fires, there will be a
-      button displayed allowing you to use <code>prompt()</code> on the deferred
-      event.
-    </p>
-    <button hidden>Show Prompt</button>
-    <script>
-      console.log( 'serviceWorker' in navigator )
-      if ('serviceWorker' in navigator) {
-        
-        navigator.serviceWorker.register('./sw.js').then(function(registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch(function(error) {
-          console.log('Service Worker registration failed:', error);
-        });;
-
-        window.addEventListener('beforeinstallprompt', event => {
-          console.log( 'beforeinstallprompt' )
-          event.preventDefault();
-          var button = document.querySelector('button');
-          button.removeAttribute('hidden');
-          button.addEventListener('click', () => {
-            event.prompt();
-            button.setAttribute('disabled', true);
-          });
-        });
-      }
-    </script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
-<!-- https://developer.mozilla.org/zh-CN/docs/Web/Progressive_web_apps/Guides/Installing -->
