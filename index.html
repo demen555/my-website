@@ -1,53 +1,37 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>PWA 示例</title>
-  <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./styles.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-  <h1>欢迎来到 PWA 示例</h1>
-  <p>这是一个简单的 Progressive Web App 示例。</p>
-  <button id="installButton" style="display: none;">安装 PWA</button>
-
-  <script>
-
-    
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(function(registration) {
+<html>
+  <head>
+    <title>Test</title>
+    <link rel="manifest" href="./app.webmanifest" />
+  </head>
+  <body>
+    <p>
+      If the <code>beforeinstallprompt</code> event fires, there will be a
+      button displayed allowing you to use <code>prompt()</code> on the deferred
+      event.
+    </p>
+    <button hidden>Show Prompt</button>
+    <script>
+      console.log( 'serviceWorker' in navigator )
+      if ('serviceWorker' in navigator) {
+        
+        navigator.serviceWorker.register('./sw.js').then(function(registration) {
           console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(function(error) {
+        }).catch(function(error) {
           console.log('Service Worker registration failed:', error);
-        });
-    }
+        });;
 
-    window.addEventListener('load', function() {
-      let deferredPrompt;
-      const installButton = document.getElementById('installButton');
-
-      window.addEventListener('beforeinstallprompt', function(event) {
-        event.preventDefault();
-        deferredPrompt = event;
-        installButton.style.display = 'block';
-
-        installButton.addEventListener('click', function() {
-          installButton.style.display = 'none';
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then(function(choiceResult) {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('用户接受了安装提示');
-            } else {
-              console.log('用户拒绝了安装提示');
-            }
-            deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', event => {
+          console.log( 'beforeinstallprompt' )
+          event.preventDefault();
+          var button = document.querySelector('button');
+          button.removeAttribute('hidden');
+          button.addEventListener('click', () => {
+            event.prompt();
+            button.setAttribute('disabled', true);
           });
         });
-      });
-    });
-  </script>
-</body>
+      }
+    </script>
+  </body>
 </html>
+<!-- https://developer.mozilla.org/zh-CN/docs/Web/Progressive_web_apps/Guides/Installing -->
