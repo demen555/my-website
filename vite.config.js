@@ -33,24 +33,25 @@ export default defineConfig({
         description: 'pwaapp',
         theme_color: '#ffffff',
         display: "standalone",
+        orientation: "any",
         screenshots: [
           {
-            "src": "./assets/app-1.png",
-            "type": "image/png",
-            "sizes": "512x1024",
-            "form_factor": "narrow"
+            src: 'pwa-360x640.png',
+            type: "image/png",
+            sizes: "360x640",
+            form_factor: "narrow"
           },
           {
-            "src": "./assets/app-2.png",
-            "type": "image/png",
-            "sizes": "512x1024",
-            "form_factor": "narrow"
+            src: 'pwa-360x640.png',
+            type: "image/png",
+            sizes: "360x640",
+            form_factor: "narrow"
           },
           {
-            "src": "./assets/app-3.png",
-            "type": "image/png",
-            "sizes": "512x1024",
-            "form_factor": "narrow"
+            src: 'pwa-360x640.png',
+            type: "image/png",
+            sizes: "360x640",
+            form_factor: "narrow"
           }
         ],
         icons: [
