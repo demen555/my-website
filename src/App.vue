@@ -31,6 +31,7 @@ function changerbbacklayerShow(){
 }
 
 function addHomePage(){
+  if(window.deferredPrompt){
     window.deferredPrompt.prompt();
     window.deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
@@ -40,6 +41,10 @@ function addHomePage(){
         }
         window.deferredPrompt = null;
     });
+  }else{
+    showToastTips()
+  }
+
 }
 
 
@@ -51,6 +56,11 @@ function onFinish(){
 function start(){
   countDown.value.start();
   startTime.value = true
+}
+
+
+function showToastTips (){
+  showToast('Please open this address with Google Chrome to install');
 }
 
 let obj = {
@@ -143,7 +153,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
  
         
       </template>
-       <div v-else class="install-btn__install install-btn__view"  @click="showToast('请用谷歌浏览器打开此地址');" data-t="install">Install</div>
+       <div v-else class="install-btn__install install-btn__view"  @click="showToastTips" data-t="install">Install</div>
      
     </div>
 
