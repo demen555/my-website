@@ -53,14 +53,10 @@ function start(){
   startTime.value = true
 }
 
-function open (){
-  window.open('https://easyearningmoney.com/pwa.html', '_self'); // 在同一窗口中打开
-}
-
 let obj = {
   name: "Ebngwah",
   dec: "Innovative Solutions Pte.Ltd",
-  v: "1.0.0"
+  v: "1.0.1"
 }
 
 const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
@@ -143,7 +139,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
               <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
           </div>
         </div>
-        <div @click="open" href="web+pwa://latte-macchiato" class="install-btn__play install-btn__view" v-else data-t="play">Play</div>
+        <a href="/pwa.html"  target="_blank"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
  
         
       </template>
@@ -294,7 +290,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
   </div>
   <!-- <PWABadge /> -->
 
-  <div class="rb-back-layer layer__container template1 layer--visible" id="rb-back-layer" v-show="rbbacklayer">
+  <!-- <div class="rb-back-layer layer__container template1 layer--visible" id="rb-back-layer" v-show="rbbacklayer">
     <div class="layer__mask" @click="changerbbacklayerShow"></div>
     <div class="layer__body">
       <img class="back__logo" loading="lazy" src="./assets/img_reward-18bc0c7471777e668be9.png" alt="">
@@ -316,7 +312,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
       <div class="back__detail__introduction">If you can <span>download the app</span> and leave an <span>objective</span> review and rating，You will have the chance to receive a <span>$20</span> Google Play gift card.</div>
     </div>
     <div class="back__btn" @click.stop="addHomePage">Install</div></div>
-  </div>
+  </div> -->
 
 </template>
 
