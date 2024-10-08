@@ -65,6 +65,7 @@ const title = computed(() => {
 function close() {
   needRefresh.value = false
 }
+
 </script>
 
 <template>

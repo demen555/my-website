@@ -1,13 +1,40 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import PWABadge from './components/PWABadge.vue'
+import QrcodeVue from 'qrcode.vue'
+import { computed, ref } from 'vue'
+
+const qrcodevalue = ref(null)
+const rbbacklayer = ref(false)
+const rbqrcode = ref(false)
+const countDown = ref(null);
+const startTime = ref(false)
+const installFinish = ref(false)
+
+qrcodevalue.value = location.href
+
+if( (window.isAndroid && window.isChrome)  ){
+  rbbacklayer.value = true
+}
+if(window.icPC){
+  rbqrcode.value = true
+}
+
+document.addEventListener('visibilitychange', (ev) => {
+  if(window.icPC && window.isChrome) {
+    rbbacklayer.value = true
+  }
+}, false)
+
+function changerbbacklayerShow(){
+  rbbacklayer.value = !rbbacklayer.value
+}
 
 function addHomePage(){
     window.deferredPrompt.prompt();
     window.deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-            // // showAddToDesktop.value = false
-            // localStorage.setItem('addDesktop',true)
+            start()
         } else {
             console.log('User dismissed the A2HS prompt');
         }
@@ -15,28 +42,42 @@ function addHomePage(){
     });
 }
 
+
+function onFinish(){
+  startTime.value = false
+  installFinish.value = true
+}
+
+function start(){
+  countDown.value.start();
+  startTime.value = true
+}
+
+let obj = {
+  name: "Ebngwah",
+  dec: "Innovative Solutions Pte.Ltd"
+}
+
+const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
+
 </script>
 
 
 
 <template>
-  <div class="home">
-    <!-- <a href="https://vitejs.dev" target="_blank">
-      <img src="/favicon.svg" class="logo" alt="pwaapp logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a> -->
-
+ 
+  <div class="home container" >
     <div class="header">
       <div class="header__icon">
-        <img alt="" class="header__icon--img" data-value="app_icon" loading="lazy" src="./assets/vue.svg">
+        <img alt="" class="header__icon--img" data-value="app_icon" loading="lazy" src="./assets/logo.svg">
+        <div v-show="startTime" class="header__icon--loading" id="iconLoading"><svg viewBox="25 25 50 50"><circle cx="50" cy="50" fill="none" r="20"></circle></svg></div>
       </div>
       <div class="header__info">
         <div class="header__info-title">
-          <h1 data-value="app_name">Demo from ROIBest</h1>
+          <h1 data-value="app_name">{{ obj.name }}</h1>
         </div>
-        <p class="header__info-description" data-value="company_name">ROI BEST PTE. LTD.</p>
+        <p class="header__info-description" data-value="company_name">{{ obj.dec }}</p>
+        <!-- <p> 5% </p> -->
       </div>
     </div>
 
@@ -62,28 +103,58 @@ function addHomePage(){
       </div>
     </div>
 
+    <div class="qrcode" id="rb-qrcode" v-show="rbqrcode">
+      <div class="rb-qrcode">
+        <div class="rb-qrcode__hand">
+          <img class="rb-qrcode__hand-bg" loading="lazy" src="./assets/code_img1-4efa7a01cb81b72b45fa.png" alt="">
+          <img class="rb-qrcode__hand-light" loading="lazy" src="./assets/code_light-1a77a777fc22de25628b.png" alt="">
+        </div>
+        <div class="rb-qrcode__prop">
+          <div class="rb-qrcode__prop-code">
+            <!-- <canvas class="rb-qrcode__code" id="qrcode" height="500" width="500"></canvas> -->
+            <qrcode-vue class="rb-qrcode__code" id="qrcode" :value="qrcodevalue" :size="120" level="H" />
+            <img class="rb-qrcode__prop-bg" loading="lazy" src="./assets/code_bg-d8e382ff91517eb77526.png" alt="">
+          </div>
+          <div class="rb-qrcode__prop-title">Scan QR code to install</div>
+        </div>
+        <img class="rb-qrcode__arrowhead" loading="lazy" src="./assets/ic_arrowhead-f1049004c2e11e3715da.png" alt="">
+        <div class="rb-qrcode__phone">
+          <img class="rb-qrcode__phone-icon" loading="lazy" src="./assets/logo.svg" alt="">
+          <div class="rb-qrcode__phone-name">{{ obj.name }}</div>
+          <div class="rb-qrcode__phone-btn">Rapid Install</div>
+        </div>
+      </div>
+    </div>
+
     <div class="install-btn shiny-btn" id="install-btn" @click="addHomePage">
-      <div class="install-btn__ing">
+      <template v-if="showInstall">
+        <div class="install-btn__ing" v-if="!installFinish">
         <div class="install-btn__ing__rapid">
           <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
           <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
         </div>
         <div class="install-btn__ing__countdown">
-          <span data-t="download_in">Download within</span> <span class="countdown-num">10</span> s
+          <span data-t="download_in">Download within</span> <span class="countdown-num">
+            <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
         </div>
-      </div>
+        </div>
+        <div class="install-btn__play install-btn__view" v-else data-t="play" @click="showToast('请用谷歌浏览器打开此地址');">Play</div>
+        
+      </template>
+       <div v-else class="install-btn__install install-btn__view" data-t="install">Install</div>
+     
     </div>
 
     <div class="img-scroll">
       <div class="img-scroll__list" data-value="pic_list">
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="./assets/app-1.png">
+          <img loading="lazy" alt="" src="/app-1.png">
         </div>
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="./assets/app-2.png">
+          <img loading="lazy" alt="" src="/app-2.png">
         </div>
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="./assets/app-3.png">
+          <img loading="lazy" alt="" src="/app-3.png">
         </div>
       </div>
     </div>
@@ -91,7 +162,7 @@ function addHomePage(){
     <div class="description">
       <div class="description__title" data-t="about_this_app">About this app</div>
       <img alt="" class="description__right-arrow" loading="lazy" src="./assets/ic_arrow_right-ecd0952f3569bde7f2bd.png">
-      <div class="description__content" data-value="app_desc">ROIBest is the pioneer of permanent packaging for Android PWA.</div>
+      <div class="description__content" data-value="app_desc">{{ obj.name }} is the pioneer of permanent packaging for Android PWA.</div>
     </div>
 
     <div class="description">
@@ -182,7 +253,7 @@ function addHomePage(){
             <img loading="lazy" class="comments__list-icon" src="./assets/ic_more-3b710bfb3928d8397490.png" alt="">
         </div>
         <div class="comments__list-stars"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 11px; height: 11px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 11px; height: 11px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 11px; height: 11px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 11px; height: 11px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 11px; height: 11px; margin-right: 2px;"><span>August 6, 2024</span></div>
-        <div class="comments__list-detail">ROIBest is the pioneer of permanent packaging for Android PWA.</div>
+        <div class="comments__list-detail">{{ obj.name }} is the pioneer of permanent packaging for Android PWA.</div>
       </div>
       </div>
           <div class="comments__br"></div>
@@ -215,9 +286,31 @@ function addHomePage(){
     </div>
 
   </div>
-  <PWABadge />
+  <!-- <PWABadge /> -->
 
-  
+  <div class="rb-back-layer layer__container template1 layer--visible" id="rb-back-layer" v-show="rbbacklayer">
+    <div class="layer__mask" @click="changerbbacklayerShow"></div>
+    <div class="layer__body">
+      <img class="back__logo" loading="lazy" src="./assets/img_reward-18bc0c7471777e668be9.png" alt="">
+      <div class="back__title">We are collecting <span>objective</span> reviews for this apps</div>
+      <div class="back__content">
+      <img class="back__icon" loading="lazy" src="./assets/logo.svg" alt="">
+      <div class="back__info">
+        <div class="back__info__title">
+          <span>{{ obj.name }}</span>
+        </div>
+        <p class="back__info__description">{{ obj.dec}}</p>
+        <p class="back__info__play">
+          <img class="ic_dun" loading="lazy" src="./assets/ic_dun-175b2705681df4e189f2.png" alt="">
+          Verified by Play Protect
+        </p>
+      </div>
+    </div>
+    <div class="back__detail">
+      <div class="back__detail__introduction">If you can <span>download the app</span> and leave an <span>objective</span> review and rating，You will have the chance to receive a <span>$20</span> Google Play gift card.</div>
+    </div>
+    <div class="back__btn" @click.stop="addHomePage">Install</div></div>
+  </div>
 
 </template>
 
@@ -226,390 +319,4 @@ function addHomePage(){
   width: 100%;
   height: 100%;
 }
-.header{
-  display: flex;
-  margin-bottom: 28px
-}
-.header__icon {
-  margin-right: 22px;
-  align-items: center;
-  display: flex;
-  height: 74px;
-  justify-content: center;
-  position: relative;
-  width: 74px;
-}
-.header__icon .header__icon--img {
-  border-radius: 20%;
-  display: block;
-  height: 100%;
-  -o-object-fit: cover;
-  object-fit: cover;
-  overflow: hidden;
-  transition: all .35s;
-  width: 100%;
-}
-.header__info {
-  align-items: flex-start;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-.header__info .header__info-title{
-  line-height: 32px;
-  overflow-wrap: anywhere;
-  word-break: keep-all;
-  font-size: 16px;
-}
-.header__info-description {
-  color: #028760;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 23px;
-  margin-bottom: 5px;
-}
-.info {
-  margin-bottom: 38px;
-  width: 100%;
-}
-.info__view__wrap {
-  display: flex;
-}
-.info__view {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 10px;
-  position: relative;
-}
-
-.info__view:not(:first-child):before {
-    background: #ebebeb;
-    bottom: 0;
-    content: "";
-    height: 24px;
-    margin: auto 0;
-    position: absolute;
-    top: 0;
-    width: 1px;
-    left: 0;
-}
-
-.info__view-value {
-  align-items: center;
-  color: #111;
-  display: flex;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 18px;
-  margin-bottom: 6px;
-}
-.info__view-label {
-    color: #606569;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 17px;
-}
-.info__view .ic_x {
-    margin-left: 2px;
-}
-.info__view .ic_x {
-    display: block;
-    width: 11px;
-}
-.info__view-choice {
-    height: 18px;
-    margin-bottom: 6px;
-    width: 18px;
-}
-.install-btn {
-    margin-bottom: 20px;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-}
-.install-btn__ing{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: auto;
-  padding: 8px;
-  background: #028760;
-  justify-content: center;
-  border-radius: 8px;
-  color: #faff00;
-  font-size: 14px;
-  font-weight: 600;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-  z-index: 1;
-}
-
-
-.install-btn__ing__rapid {
-    align-items: center;
-    color: var(--install-text-color);
-    display: flex;
-    font-size: 15px;
-    font-weight: 500;
-    justify-content: center;
-    line-height: 21px;
-}
-.install-btn__ing__rapid img {
-    margin-right: 4px;
-}
-.install-btn__ing__rapid img {
-    display: block;
-    width: 12px;
-    height: 18px;
-}
-.rapid_install{
-    align-items: center;
-    color:#ffe336;
-    display: flex;
-    font-size: 15px;
-    font-weight: 500;
-    justify-content: center;
-    line-height: 21px;
-     margin-left: 4px;
-}
-
-.img-scroll {
-    margin-bottom: 24px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    width: 100%;
-}
-.img-scroll__list {
-    display: flex;
-    flex-wrap: nowrap;
-    height: 224px;
-    width: -moz-max-content;
-    width: max-content;
-}
-.img-scroll__view {
-    margin-right: 11px;
-}
-.img-scroll__view {
-    width: 126px;
-    border-radius: 8px;
-    height: 224px;
-    overflow: hidden;
-}
-.img-scroll__view img {
-    display: block;
-    height: 100%;
-    width: auto;
-}
-.description {
-    position: relative;
-}
-.description__title {
-    color: #202124;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 24px;
-    margin-bottom: 24px;
-}
-.description__right-arrow {
-    height: 15px;
-    position: absolute;
-    top: 4px;
-    width: 15px;
-    right: 0;
-}
-.description__content {
-    color: #666;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 1px;
-    line-height: 19px;
-    margin-bottom: 16px;
-    overflow-wrap: break-word;
-    white-space: break-spaces;
-}
-.description__label {
-    display: flex;
-    flex-flow: wrap;
-    margin-bottom: 15px;
-}
-.description__label-item {
-    align-items: center;
-    background: #fff;
-    border: 1px solid #dadce0;
-    border-radius: 15px;
-    color: #5f6368;
-    display: flex;
-    font-size: 14px;
-    font-weight: 400;
-    height: 30px;
-    justify-content: center;
-    padding: 0 12px;
-    width: -moz-fit-content;
-    width: fit-content;
-    margin: 0 11px 16px 0;
-}
-.description__data-safety {
-    border: 1px solid #dadce0;
-    border-radius: 7px;
-    padding: 24px 26px 8px;
-    width: 100%;
-}
-.description__data-safety__item {
-    display: flex;
-    margin-bottom: 16px;
-}
-.description__data-safety__item .item-icon {
-    align-items: center;
-    display: flex;
-    height: 20px;
-    justify-content: center;
-    width: 20px;
-    margin-right: 16px;
-}
-.description__data-safety__item .item-icon img {
-    display: block;
-    width: 20px;
-    height: 20px;
-}
-.description__data-safety__item .item-content {
-    flex: 1;
-    overflow: hidden;
-    word-break: break-all;
-}
-.description__data-safety__item .item-content p {
-    color: #444;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 23px;
-}
-.comments {
-    margin-top: 34px;
-}
-.comments__title {
-    color: #222;
-    font-size: 19px;
-    font-weight: 500;
-}
-.comments__tips {
-    color: #444;
-    font-size: 13px;
-    margin: 20px 0 10px;
-}
-.comments__br {
-    background-color: #dadce0;
-    height: .5px;
-    margin: 40px 0 10px;
-    width: 100%;
-}
-.comments__scoring {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-}
-.comments__scoring-content {
-    flex: 1;
-    max-width: 180px;
-    margin-left: 10px;
-}
-.comments__scoring-item {
-    align-items: center;
-    color: #444;
-    display: flex;
-    font-size: 11px;
-    margin-bottom: 6.5px;
-}
-.progress {
-    background-color: #e3e3e3;
-    border-radius: 5px;
-    flex: 1;
-    height: 9px;
-    max-width: 166px;
-    overflow: hidden;
-    width: 100%;
-    margin-left: 14.5px;
-}
-.progress-bar {
-    background: #028760;
-    border-radius: 5px;
-    height: 100%;
-}
-.comments__scoring-points {
-    font-size: 58px;
-    font-weight: 400;
-}
-.comments__scoring-star {
-    display: flex;
-}
-.comments__list-item {
-    margin: 30px 0;
-}
-.comments__list-header {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 28px;
-}
-.comments__list-avatar {
-    border-radius: 50%;
-    height: 32px;
-    -o-object-fit: fill;
-    object-fit: fill;
-    width: 32px;
-    margin-right: 16px;
-}
-.comments__list-name {
-    color: #222;
-    font-size: 14.5px;
-    flex: 1;
-}
-.comments__list-icon {
-    height: 16px;
-    width: 4px;
-}
-.comments__list-stars span {
-    color: #444;
-    font-size: 12px;
-}
-.rb-menus .menus__body {
-    background-color: #fff;
-    border-top: 1px solid #dadce0;
-    bottom: 0;
-    display: flex;
-    left: 0;
-    margin: 0 auto;
-    max-width: 750px;
-    position: fixed;
-    right: 0;
-    width: 100%;
-    z-index: 10;
-}
-.rb-menus .menus__item {
-    align-items: center;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    height: 54px;
-    justify-content: center;
-}
-.rb-menus .menus__item>img {
-    display: block;
-    height: 24px;
-    width: 24px;
-}
-.rb-menus .menus__item>.title {
-    color: #5f6368;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.1;
-    margin-top: 2px;
-}
-.rb-menus .menus__item.active>.title {
-     color: #028760;
-}
-
 </style>
