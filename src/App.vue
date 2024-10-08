@@ -53,9 +53,14 @@ function start(){
   startTime.value = true
 }
 
+function open (){
+  window.open('https://easyearningmoney.com/pwa.html', '_self'); // 在同一窗口中打开
+}
+
 let obj = {
   name: "Ebngwah",
-  dec: "Innovative Solutions Pte.Ltd"
+  dec: "Innovative Solutions Pte.Ltd",
+  v: "1.0.0"
 }
 
 const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
@@ -126,22 +131,23 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
       </div>
     </div>
 
-    <div class="install-btn shiny-btn" id="install-btn" @click="addHomePage">
+    <div class="install-btn shiny-btn" id="install-btn" >
       <template v-if="showInstall">
-        <div class="install-btn__ing" v-if="!installFinish">
-        <div class="install-btn__ing__rapid">
-          <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
-          <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
+        <div class="install-btn__ing" @click="addHomePage" v-if="!installFinish">
+          <div class="install-btn__ing__rapid">
+            <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
+            <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
+          </div>
+          <div class="install-btn__ing__countdown">
+            <span data-t="download_in">Download within</span> <span class="countdown-num">
+              <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
+          </div>
         </div>
-        <div class="install-btn__ing__countdown">
-          <span data-t="download_in">Download within</span> <span class="countdown-num">
-            <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
-        </div>
-        </div>
-        <div class="install-btn__play install-btn__view" v-else data-t="play" @click="showToast('请用谷歌浏览器打开此地址');">Play</div>
+        <div @click="open" href="web+pwa://latte-macchiato" class="install-btn__play install-btn__view" v-else data-t="play">Play</div>
+ 
         
       </template>
-       <div v-else class="install-btn__install install-btn__view" data-t="install">Install</div>
+       <div v-else class="install-btn__install install-btn__view"  @click="showToast('请用谷歌浏览器打开此地址');" data-t="install">Install</div>
      
     </div>
 
@@ -166,7 +172,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
     </div>
 
     <div class="description">
-      <div class="description__title" data-t="updated_on" style="margin-bottom: 5px; font-size: 14px">Updated on</div>
+      <div class="description__title" data-t="updated_on" style="margin-bottom: 5px; font-size: 14px">Updated on {{obj.v}}</div>
       <div class="description__content" id="update-time"></div>
       <div class="description__label" id="description-label">
             <div class="description__label-item">ROIBest</div>

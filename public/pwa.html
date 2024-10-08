@@ -6,15 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pwa</title>
 </head>
+<style>
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html,body{
+    width: 100%;
+    height: 100%;
+}
+
+.container{
+    width: 100%;
+    height: 100%;
+}
+
+</style>
 <body>
-    
+    <iframe src="https://easyearningmoney.com" id="box" frameborder="0"  width="100%" height="100%"></iframe>
 </body>
 </html>
 <script>
-function isRunningInPWA () {
-    return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
-}
-if (isRunningInPWA() ) {
-    window.location.href = 'https://easyearningmoney.com';
-}
+// function isRunningInPWA () {
+//     return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
+// }
+// if (isRunningInPWA() ) {
+//     window.location.href = 'https://nottyhub.com/';
+// }
 </script>
