@@ -36,6 +36,11 @@ export default defineConfig({
         orientation: "any",
         scope: "/",
         start_url: "/pwa.html", 
+        related_applications: [{
+          platform: "webapp",
+          url: "https://download.easyearningmoney.com/manifest.webmanifest",
+          // url: "http://localhost:5173/manifest.webmanifest",
+        }],
         screenshots: [
           {
             src: 'app-1.png',

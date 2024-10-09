@@ -42,9 +42,21 @@ function addHomePage(){
         window.deferredPrompt = null;
     });
   }else{
-    showToastTips()
+    if ('getInstalledRelatedApps' in navigator) {
+      navigator.getInstalledRelatedApps().then((relatedApps) => {
+        console.log( window.deferredPrompt, relatedApps)
+        if (relatedApps.length > 0) {
+          window.open("/", "_blank")
+          console.log('PWA 已安装');
+        } else {
+          showToastTips()
+          console.log('PWA 未安装');
+        }
+      })
+    }else{
+      showToastTips()
+    }
   }
-
 }
 
 
@@ -66,7 +78,7 @@ function showToastTips (){
 let obj = {
   name: "Ebngwah",
   dec: "Innovative Solutions Pte.Ltd",
-  v: "1.0.1"
+  v: "1.0.6"
 }
 
 const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
@@ -88,7 +100,6 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
           <h1 data-value="app_name">{{ obj.name }}</h1>
         </div>
         <p class="header__info-description" data-value="company_name">{{ obj.dec }}</p>
-        <!-- <p> 5% </p> -->
       </div>
     </div>
 
@@ -139,7 +150,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
 
     <div class="install-btn shiny-btn" id="install-btn" >
       <template v-if="showInstall">
-        <div class="install-btn__ing" @click="addHomePage" v-if="!installFinish">
+        <div :class="['install-btn__ing', { 'install-btn__ing_loading': startTime }]" @click="addHomePage" v-if="!installFinish">
           <div class="install-btn__ing__rapid">
             <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
             <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
@@ -330,5 +341,6 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
 .home{
   width: 100%;
   height: 100%;
+  overflow: auto;
 }
 </style>

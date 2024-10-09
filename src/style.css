@@ -361,7 +361,9 @@ body {
   padding: 8px;
   cursor: pointer;
 }
-
+.install-btn__ing_loading{
+  opacity: 0.4;
+}
 .install-btn__ing__rapid {
   align-items: center;
   color: var(--install-text-color);
