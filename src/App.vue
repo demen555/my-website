@@ -149,7 +149,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
               <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
           </div>
         </div>
-        <a href="/pwa.html"  target="_blank"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
+        <a href="/"  target="_blank"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
  
         
       </template>

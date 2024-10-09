@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
+import Pwa from './App.vue'
 
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;   //判断是否是 android终端
@@ -16,7 +17,7 @@ function isRunningInPWA () {
     return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
 }
 
-if (isRunningInPWA() || window.isIOS ) {
+if ( window.isIOS ) {
     window.location.href = 'https://easyearningmoney.com';
 }else{
     showLoadingToast({
@@ -31,5 +32,9 @@ if (isRunningInPWA() || window.isIOS ) {
     })
 }
 
+if(isRunningInPWA()){
+    createApp(Pwa).mount('#app')
+}else{
+    createApp(App).mount('#app')
+}
 
-createApp(App).mount('#app')
