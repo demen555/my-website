@@ -13,26 +13,15 @@ window.isIOS = isIOS
 window.isChrome = isChrome
 window.icPC = icPC
 
-function isRunningInPWA () {
-    return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
-}
+let isPwa = false
+isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+
 
 if ( window.isIOS ) {
-    window.location.href = 'https://easyearningmoney.com';
-}else{
-    showLoadingToast({
-        duration: 5000,
-        forbidClick: true,
-    });
-    // 在主入口监听PWA注册事件 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        closeToast();
-        e.preventDefault();
-        window.deferredPrompt = e;
-    })
+    isPwa = false
 }
 
-if(isRunningInPWA()){
+if( isPwa ){
     createApp(Pwa).mount('#app')
 }else{
     createApp(App).mount('#app')

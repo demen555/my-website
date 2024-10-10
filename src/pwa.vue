@@ -5,6 +5,10 @@
 
 <script setup>
 let obj = global.config
+// 记录用户最后活动时间
+window.addEventListener('beforeunload', () => {
+    localStorage.setItem('lastActive', new Date().toISOString());
+});
 </script>
 
 

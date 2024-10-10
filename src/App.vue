@@ -5,60 +5,48 @@ import QrcodeVue from 'qrcode.vue'
 import { computed, ref } from 'vue'
 
 const qrcodevalue = ref(null)
-const rbbacklayer = ref(false)
 const rbqrcode = ref(false)
 const countDown = ref(null);
 const startTime = ref(false)
 const installFinish = ref(false)
+const showInstall = ref(false)
 
 qrcodevalue.value = location.href
 
-if( (window.isAndroid && window.isChrome)  ){
-  rbbacklayer.value = true
+showLoadingToast({
+    duration: 5000,
+    forbidClick: true,
+});
+
+// 在主入口监听PWA注册事件 
+window.addEventListener('beforeinstallprompt', (e) => {
+    closeToast();
+    showInstall.value = true
+    e.preventDefault();
+    window.deferredPrompt = e;
+})
+
+if( localStorage.getItem('installFinish') ){
+  showInstall.value = true
+  installFinish.value = true
 }
+
 if(window.icPC){
   rbqrcode.value = true
 }
 
-document.addEventListener('visibilitychange', (ev) => {
-  if(window.icPC && window.isChrome) {
-    rbbacklayer.value = true
-  }
-}, false)
-
-function changerbbacklayerShow(){
-  rbbacklayer.value = !rbbacklayer.value
-}
-
 function addHomePage(){
-  if(window.deferredPrompt){
-    window.deferredPrompt.prompt();
-    window.deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-            start()
-        } else {
-            console.log('User dismissed the A2HS prompt');
-        }
-        window.deferredPrompt = null;
-    });
-  }else{
-    if ('getInstalledRelatedApps' in navigator) {
-      navigator.getInstalledRelatedApps().then((relatedApps) => {
-        console.log( window.deferredPrompt, relatedApps)
-        if (relatedApps.length > 0) {
-          window.open("/", "_blank")
-          console.log('PWA 已安装');
-        } else {
-          showToastTips()
-          console.log('PWA 未安装');
-        }
-      })
-    }else{
-      showToastTips()
-    }
-  }
+  window.deferredPrompt.prompt();
+  window.deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+          // localStorage.setItem('installFinish', true)
+          start()
+      } else {
+          console.log('User dismissed the A2HS prompt');
+      }
+      window.deferredPrompt = null;
+  });
 }
-
 
 function onFinish(){
   startTime.value = false
@@ -70,15 +58,13 @@ function start(){
   startTime.value = true
 }
 
-
 function showToastTips (){
-  showToast('Please open this address with Google Chrome to install');
+  showToast('The current browser does not support pwa installation, please switch to Google Chrome or a higher version');
 }
 
 let obj = global.config
 
 
-const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
 
 </script>
 
