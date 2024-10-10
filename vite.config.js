@@ -21,11 +21,20 @@ export default defineConfig({
       resolvers: [VantResolver()],
     }),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
-      injectRegister: 'inline',
+      injectRegister: false,
+
       pwaAssets: {
         disabled: false,
         config: true,
+      },
+
+
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
       },
 
       manifest: {
@@ -78,11 +87,6 @@ export default defineConfig({
         ],
       },
 
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
-        cleanupOutdatedCaches: false,
-        clientsClaim: true,
-      },
 
       devOptions: {
         enabled: true,
