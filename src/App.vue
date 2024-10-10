@@ -11,7 +11,7 @@ const startTime = ref(false)
 const installFinish = ref(false)
 const showInstall = ref(false)
 const obj = ref({})
-
+const isPC = window.icPC
 
 qrcodevalue.value = location.href
 
@@ -20,19 +20,36 @@ showLoadingToast({
     forbidClick: true,
 });
 
-// 在主入口监听PWA注册事件 
-window.addEventListener('beforeinstallprompt', (e) => {
-    localStorage.setItem('installFinish', "0")
-    closeToast();
+// 只要不是谷歌浏览器 点击后 要打开谷歌浏览器
+const userAgent = navigator.userAgent;
+const isChrome = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor) && userAgent.includes('Chrome') &&
+                 !userAgent.includes('Edg') &&
+                 !userAgent.includes('OPR') &&
+                 !userAgent.includes('Brave') &&
+                 !userAgent.includes('Vivaldi') &&
+                 !userAgent.includes('SamsungBrowser') &&
+                 !userAgent.includes('YaBrowser');
+
+           
+if(isChrome){
+  // 在主入口监听PWA注册事件 
+  window.addEventListener('beforeinstallprompt', (e) => {
+      localStorage.setItem('installFinish', "0")
+      closeToast();
+      showInstall.value = true
+      e.preventDefault();
+      window.deferredPrompt = e;
+  })
+
+  if( localStorage.getItem('installFinish') == "1" ){
     showInstall.value = true
-    e.preventDefault();
-    window.deferredPrompt = e;
-})
-console.log( localStorage.getItem('installFinish') )
-if( localStorage.getItem('installFinish') == "1" ){
-  showInstall.value = true
-  installFinish.value = true
+    installFinish.value = true
+  }
+}else{
+  closeToast();
+  showInstall.value = false
 }
+
 
 if(window.icPC){
   rbqrcode.value = true
@@ -77,9 +94,6 @@ onMounted(async () => {
     console.error('Error loading config:', error);
   }
 });
-
-
-
 
 
 </script>
@@ -162,12 +176,15 @@ onMounted(async () => {
               <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
           </div>
         </div>
-        <a href="/"  target="_self"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
- 
         
+        <template v-else>
+          <a href="/" v-if="isPC" target="_self"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
+          <a href="/" v-else target="_blank"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
+        </template>
+
+
       </template>
-       <div v-else class="install-btn__install install-btn__view"  @click="showToastTips" data-t="install">Install</div>
-     
+      <a :href="obj.googlechromeUrl" v-else class="install-btn__install install-btn__view" data-t="install">Install</a>
     </div>
 
     <div class="img-scroll">

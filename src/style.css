@@ -87,6 +87,12 @@ body {
 .install-btn__play:hover{
   color: #ffffff;
 }
+.install-btn__install{
+  color: #fff;
+}
+.install-btn__install:hover{
+  color: #ffffff;
+}
 .header {
   display: flex;
   margin-bottom: 28px

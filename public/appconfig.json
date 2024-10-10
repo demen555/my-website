@@ -1,6 +1,7 @@
 {
     "name": "Ebngwah", 
-    "version": "1.0.18",
+    "version": "1.0.19",
     "description": "Innovative Solutions Pte.Ltd",
-    "pwaUrl": "https://easyearningmoney.com"
+    "pwaUrl": "https://easyearningmoney.com",
+    "googlechromeUrl": "intent://easyearningmoney.com#Intent;scheme=http;package=com.android.chrome;end"
 }
