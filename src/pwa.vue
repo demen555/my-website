@@ -1,6 +1,13 @@
 <template>
-    <iframe src="https://easyearningmoney.com" id="box" frameborder="0"  width="100%" height="100%"></iframe>
+    <iframe :src="obj.pwaUrl" id="box" frameborder="0"  width="100%" height="100%"></iframe>
 </template>
+
+
+<script setup>
+let obj = global.config
+</script>
+
+
 <style>
 *{
     margin: 0;

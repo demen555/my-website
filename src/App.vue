@@ -75,31 +75,31 @@ function showToastTips (){
   showToast('Please open this address with Google Chrome to install');
 }
 
-let obj = {
-  name: "Ebngwah",
-  dec: "Innovative Solutions Pte.Ltd",
-  v: "1.0.6"
-}
+let obj = global.config
+
 
 const showInstall = window.isAndroid && window.isChrome || window.icPC && window.isChrome 
 
 </script>
 
-
+<style scoped>
+.home{
+  padding: 16px;
+}
+</style>
 
 <template>
- 
-  <div class="home container" >
+  <div class="home" >
     <div class="header">
       <div class="header__icon">
-        <img alt="" class="header__icon--img" data-value="app_icon" loading="lazy" src="./assets/logo.svg">
+        <img alt="" class="header__icon--img" data-value="app_icon" loading="lazy" src="/logo.svg">
         <div v-show="startTime" class="header__icon--loading" id="iconLoading"><svg viewBox="25 25 50 50"><circle cx="50" cy="50" fill="none" r="20"></circle></svg></div>
       </div>
       <div class="header__info">
         <div class="header__info-title">
           <h1 data-value="app_name">{{ obj.name }}</h1>
         </div>
-        <p class="header__info-description" data-value="company_name">{{ obj.dec }}</p>
+        <p class="header__info-description" data-value="company_name">{{ obj.description }}</p>
       </div>
     </div>
 
@@ -141,7 +141,7 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
         </div>
         <img class="rb-qrcode__arrowhead" loading="lazy" src="./assets/ic_arrowhead-f1049004c2e11e3715da.png" alt="">
         <div class="rb-qrcode__phone">
-          <img class="rb-qrcode__phone-icon" loading="lazy" src="./assets/logo.svg" alt="">
+          <img class="rb-qrcode__phone-icon" loading="lazy" src="/logo.svg" alt="">
           <div class="rb-qrcode__phone-name">{{ obj.name }}</div>
           <div class="rb-qrcode__phone-btn">Rapid Install</div>
         </div>
@@ -171,13 +171,13 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
     <div class="img-scroll">
       <div class="img-scroll__list" data-value="pic_list">
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="/app-1.png">
+          <img loading="lazy" alt="" src="/app-screenshots-1.png">
         </div>
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="/app-2.png">
+          <img loading="lazy" alt="" src="/app-screenshots-2.png">
         </div>
         <div class="img-scroll__view">
-          <img loading="lazy" alt="" src="/app-3.png">
+          <img loading="lazy" alt="" src="/app-screenshots-3.png">
         </div>
       </div>
     </div>
@@ -189,10 +189,10 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
     </div>
 
     <div class="description">
-      <div class="description__title" data-t="updated_on" style="margin-bottom: 5px; font-size: 14px">Updated on {{obj.v}}</div>
+      <div class="description__title" data-t="updated_on" style="margin-bottom: 5px; font-size: 14px">Updated on</div>
       <div class="description__content" id="update-time"></div>
       <div class="description__label" id="description-label">
-            <div class="description__label-item">ROIBest</div>
+            <div class="description__label-item"> {{obj.version}}</div>
       </div>
     </div>
   
@@ -307,40 +307,6 @@ const showInstall = window.isAndroid && window.isChrome || window.icPC && window
         </div>
       </div>
     </div>
-
   </div>
-  <!-- <PWABadge /> -->
-
-  <!-- <div class="rb-back-layer layer__container template1 layer--visible" id="rb-back-layer" v-show="rbbacklayer">
-    <div class="layer__mask" @click="changerbbacklayerShow"></div>
-    <div class="layer__body">
-      <img class="back__logo" loading="lazy" src="./assets/img_reward-18bc0c7471777e668be9.png" alt="">
-      <div class="back__title">We are collecting <span>objective</span> reviews for this apps</div>
-      <div class="back__content">
-      <img class="back__icon" loading="lazy" src="./assets/logo.svg" alt="">
-      <div class="back__info">
-        <div class="back__info__title">
-          <span>{{ obj.name }}</span>
-        </div>
-        <p class="back__info__description">{{ obj.dec}}</p>
-        <p class="back__info__play">
-          <img class="ic_dun" loading="lazy" src="./assets/ic_dun-175b2705681df4e189f2.png" alt="">
-          Verified by Play Protect
-        </p>
-      </div>
-    </div>
-    <div class="back__detail">
-      <div class="back__detail__introduction">If you can <span>download the app</span> and leave an <span>objective</span> review and rating，You will have the chance to receive a <span>$20</span> Google Play gift card.</div>
-    </div>
-    <div class="back__btn" @click.stop="addHomePage">Install</div></div>
-  </div> -->
-
 </template>
 
-<style scoped>
-.home{
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
-</style>

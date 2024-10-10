@@ -4,9 +4,11 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { VantResolver } from "@vant/auto-import-resolver";
-import postcsspxtoviewport8plugin from 'postcss-px-to-viewport-8-plugin';
-import postcssmobileforever from 'postcss-mobile-forever';
-
+import fs from 'fs';
+import path from 'path';
+// 读取和解析 JSON 文件
+const configPath = path.resolve(__dirname, 'public', 'appconfig.json');
+const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,9 +21,8 @@ export default defineConfig({
       resolvers: [VantResolver()],
     }),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       injectRegister: 'inline',
-    
       pwaAssets: {
         disabled: false,
         config: true,
@@ -35,27 +36,23 @@ export default defineConfig({
         display: "standalone",
         orientation: "any",
         scope: "/",
-        start_url: "/pwa.html", 
-        related_applications: [{
-          platform: "webapp",
-          url: "https://download.easyearningmoney.com/manifest.webmanifest",
-          // url: "http://localhost:5173/manifest.webmanifest",
-        }],
+        start_url: "/", 
+
         screenshots: [
           {
-            src: 'app-1.png',
+            src: 'app-screenshots-1.png',
             type: "image/png",
             sizes: "360x640",
             form_factor: "narrow"
           },
           {
-            src: 'app-2.png',
+            src: 'app-screenshots-2.png',
             type: "image/png",
             sizes: "360x640",
             form_factor: "narrow"
           },
           {
-            src: 'app-3.png',
+            src: 'app-screenshots-3.png',
             type: "image/png",
             sizes: "360x640",
             form_factor: "narrow"
@@ -121,5 +118,9 @@ export default defineConfig({
         // }),
       ],
     },
+  },
+  // 将配置数据通过自定义的全局变量暴露
+  define: {
+    'global.config': JSON.stringify(configData), // 直接将配置作为全局变量
   },
 })
