@@ -81,7 +81,12 @@ body {
 .container:not(.container--landing-page)[data-type=INSTALLING] .header__info-progress,.container:not(.container--landing-page)[data-type=PLAY] .header__info-progress {
   display: block
 }
-
+.install-btn__play{
+  color: #fff;
+}
+.install-btn__play:hover{
+  color: #ffffff;
+}
 .header {
   display: flex;
   margin-bottom: 28px
@@ -160,7 +165,9 @@ body {
   overflow-wrap: anywhere;
   word-break: keep-all
 }
-
+.header__info-title h1{
+  color: #000000;
+}
 .header__info-title span {
   color: #111;
   font-size: 24px;

@@ -162,7 +162,7 @@ onMounted(async () => {
               <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
           </div>
         </div>
-        <a href="/"  target="_blank"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
+        <a href="/"  target="_self"  class="install-btn__play install-btn__view" v-else data-t="play">Play</a>
  
         
       </template>
