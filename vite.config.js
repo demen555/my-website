@@ -38,9 +38,9 @@ export default defineConfig({
       },
 
       manifest: {
-        name: 'pwaapp',
-        short_name: 'pwaapp',
-        description: 'pwaapp',
+        name: 'Ebngwah',
+        short_name: 'Ebngwah',
+        description: 'Innovative Solutions Pte.Ltd',
         theme_color: '#ffffff',
         display: "standalone",
         orientation: "any",

@@ -17,6 +17,7 @@ let isPwa = false
 isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
 
 
+
 if ( window.isIOS ) {
     isPwa = false
 }

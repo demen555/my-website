@@ -2,7 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import PWABadge from './components/PWABadge.vue'
 import QrcodeVue from 'qrcode.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted  } from 'vue'
 
 const qrcodevalue = ref(null)
 const rbqrcode = ref(false)
@@ -10,6 +10,8 @@ const countDown = ref(null);
 const startTime = ref(false)
 const installFinish = ref(false)
 const showInstall = ref(false)
+const obj = ref({})
+
 
 qrcodevalue.value = location.href
 
@@ -20,13 +22,14 @@ showLoadingToast({
 
 // 在主入口监听PWA注册事件 
 window.addEventListener('beforeinstallprompt', (e) => {
+    localStorage.setItem('installFinish', "0")
     closeToast();
     showInstall.value = true
     e.preventDefault();
     window.deferredPrompt = e;
 })
-
-if( localStorage.getItem('installFinish') ){
+console.log( localStorage.getItem('installFinish') )
+if( localStorage.getItem('installFinish') == "1" ){
   showInstall.value = true
   installFinish.value = true
 }
@@ -39,7 +42,7 @@ function addHomePage(){
   window.deferredPrompt.prompt();
   window.deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-          // localStorage.setItem('installFinish', true)
+          localStorage.setItem('installFinish', "1")
           start()
       } else {
           console.log('User dismissed the A2HS prompt');
@@ -62,7 +65,20 @@ function showToastTips (){
   showToast('The current browser does not support pwa installation, please switch to Google Chrome or a higher version');
 }
 
-let obj = global.config
+
+// 使用 onMounted 钩子加载配置
+onMounted(async () => {
+  try {
+    const response = await fetch('/appconfig.json'); // 从 public 目录加载 JSON 文件
+    const data  = await response.json();
+    obj.value = data; // 直接将整个配置对象赋值
+   
+  } catch (error) {
+    console.error('Error loading config:', error);
+  }
+});
+
+
 
 
 
