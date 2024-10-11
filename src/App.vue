@@ -83,6 +83,16 @@ function showToastTips (){
 }
 
 
+
+function pcOpenself(){
+  const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if( isPwa ){
+    window.open(obj.value.pwaUrl, "_self")
+  }else{
+    window.open(obj.value.pwaUrl, "_blank")
+  }
+}
+
 // 使用 onMounted 钩子加载配置
 onMounted(async () => {
   try {
@@ -178,7 +188,7 @@ onMounted(async () => {
         </div>
         
         <template v-else>
-          <a href="/" v-if="isPC" target="_self"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
+          <div v-if="isPC" @click="pcOpenself" class="install-btn__play install-btn__view"  data-t="play">Play</div>
           <a href="/" v-else target="_blank"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
         </template>
 

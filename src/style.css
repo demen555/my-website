@@ -83,12 +83,14 @@ body {
 }
 .install-btn__play{
   color: #fff;
+  cursor: pointer;
 }
 .install-btn__play:hover{
   color: #ffffff;
 }
 .install-btn__install{
   color: #fff;
+  cursor: pointer;
 }
 .install-btn__install:hover{
   color: #ffffff;
