@@ -1473,7 +1473,8 @@ body {
 
 .comments__scoring-points {
   font-size: 58px;
-  font-weight: 400
+  font-weight: 400;
+  color: #000;
 }
 
 .comments__scoring-icon {

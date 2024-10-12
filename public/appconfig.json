@@ -1,7 +1,11 @@
 {
     "name": "Ebngwah", 
-    "version": "1.0.21",
+    "version": "1.0.22",
     "description": "Innovative Solutions Pte.Ltd",
     "pwaUrl": "https://easyearningmoney.com",
-    "googlechromeUrl": "intent://download.easyearningmoney.com/#Intent;scheme=http;package=com.android.chrome;end"
+    "googlechromeUrl": "intent://download.easyearningmoney.com/#Intent;scheme=http;package=com.android.chrome;end",
+    "about_app": "Ebngwah is the pioneer of permanent packaging for Android PWA.",
+    "reviews": "124",
+    "star": "5.0",
+    "downloads": "45K +"
 }

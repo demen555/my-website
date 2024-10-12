@@ -10,32 +10,50 @@ const countDown = ref(null);
 const startTime = ref(false)
 const installFinish = ref(false)
 const showInstall = ref(false)
+const appLoading = ref(true)
 const obj = ref({})
 const isPC = window.icPC
 
-qrcodevalue.value = location.href
-
 showLoadingToast({
-    duration: 5000,
+    duration: 3500,
     forbidClick: true,
+    message: 'Loading',
 });
+
+async function loadJson(){
+  try {
+    const response = await fetch('/appconfig.json'); // 从 public 目录加载 JSON 文件
+    const data  = await response.json();
+    setTimeout( () => {
+      obj.value = data; // 直接将整个配置对象赋值
+      appLoading.value = false; 
+      // closeToast();
+    }, 2000)
+  } catch (error) {
+    console.error('Error loading config:', error);
+  }
+}
+loadJson()
+
+
+
+qrcodevalue.value = location.href
 
 // 只要不是谷歌浏览器 点击后 要打开谷歌浏览器
 const userAgent = navigator.userAgent;
 const isChrome = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor) && userAgent.includes('Chrome') &&
-                 !userAgent.includes('Edg') &&
-                 !userAgent.includes('OPR') &&
-                 !userAgent.includes('Brave') &&
-                 !userAgent.includes('Vivaldi') &&
-                 !userAgent.includes('SamsungBrowser') &&
-                 !userAgent.includes('YaBrowser');
+                !userAgent.includes('Edg') &&
+                !userAgent.includes('OPR') &&
+                !userAgent.includes('Brave') &&
+                !userAgent.includes('Vivaldi') &&
+                !userAgent.includes('SamsungBrowser') &&
+                !userAgent.includes('YaBrowser');
 
-           
+          
 if(isChrome){
   // 在主入口监听PWA注册事件 
   window.addEventListener('beforeinstallprompt', (e) => {
       localStorage.setItem('installFinish', "0")
-      closeToast();
       showInstall.value = true
       e.preventDefault();
       window.deferredPrompt = e;
@@ -46,7 +64,6 @@ if(isChrome){
     installFinish.value = true
   }
 }else{
-  closeToast();
   showInstall.value = false
 }
 
@@ -54,6 +71,11 @@ if(isChrome){
 if(window.icPC){
   rbqrcode.value = true
 }
+
+
+
+
+
 
 function addHomePage(){
   window.deferredPrompt.prompt();
@@ -93,18 +115,6 @@ function pcOpenself(){
   }
 }
 
-// 使用 onMounted 钩子加载配置
-onMounted(async () => {
-  try {
-    const response = await fetch('/appconfig.json'); // 从 public 目录加载 JSON 文件
-    const data  = await response.json();
-    obj.value = data; // 直接将整个配置对象赋值
-   
-  } catch (error) {
-    console.error('Error loading config:', error);
-  }
-});
-
 
 </script>
 
@@ -133,25 +143,25 @@ onMounted(async () => {
       <div class="info__view__wrap">
         <div class="info__view">
           <div class="info__view-value">
-            <span data-value="app_score">5.0</span> 
+            <span data-value="app_score">{{ obj.star }}</span> 
             <img alt="" class="ic_x" loading="lazy" src="./assets/ic_x-5cfcc16318512e841386.png">
           </div>
-          <div class="info__view-label" data-value="app_comments">124 reviews</div>
+          <div class="info__view-label" data-value="app_comments" v-show="!appLoading">{{ obj.reviews }} reviews</div>
         </div>
 
         <div class="info__view">
-          <div class="info__view-value" data-value="app_download">45K +</div>
-          <div class="info__view-label" data-t="downloads.label">Downloads</div>
+          <div class="info__view-value" data-value="app_download" v-show="!appLoading">{{ obj.downloads }}</div>
+          <div class="info__view-label" data-t="downloads.label" v-show="!appLoading">Downloads</div>
         </div>
         
         <div class="info__view">
           <img alt="" class="info__view-choice" src="./assets/ic_editors_choice-90a4c40deaa30c9e44e2.png">
-          <div class="info__view-label" data-t="editors_choice">Editors' Choice</div>
+          <div class="info__view-label" data-t="editors_choice" v-show="!appLoading">Editors' Choice</div>
         </div>
       </div>
     </div>
 
-    <div class="qrcode" id="rb-qrcode" v-show="rbqrcode">
+    <div class="qrcode" id="rb-qrcode" v-show="rbqrcode && !appLoading">
       <div class="rb-qrcode">
         <div class="rb-qrcode__hand">
           <img class="rb-qrcode__hand-bg" loading="lazy" src="./assets/code_img1-4efa7a01cb81b72b45fa.png" alt="">
@@ -160,7 +170,7 @@ onMounted(async () => {
         <div class="rb-qrcode__prop">
           <div class="rb-qrcode__prop-code">
             <!-- <canvas class="rb-qrcode__code" id="qrcode" height="500" width="500"></canvas> -->
-            <qrcode-vue class="rb-qrcode__code" id="qrcode" :value="qrcodevalue" :size="120" level="H" />
+            <qrcode-vue class="rb-qrcode__code" id="qrcode" :value="qrcodevalue" :size="130" level="H" />
             <img class="rb-qrcode__prop-bg" loading="lazy" src="./assets/code_bg-d8e382ff91517eb77526.png" alt="">
           </div>
           <div class="rb-qrcode__prop-title">Scan QR code to install</div>
@@ -175,7 +185,7 @@ onMounted(async () => {
     </div>
 
     <div class="install-btn shiny-btn" id="install-btn" >
-      <template v-if="showInstall">
+      <template v-if="showInstall && !appLoading">
         <div :class="['install-btn__ing', { 'install-btn__ing_loading': startTime }]" @click="addHomePage" v-if="!installFinish">
           <div class="install-btn__ing__rapid">
             <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
@@ -191,21 +201,19 @@ onMounted(async () => {
           <div v-if="isPC" @click="pcOpenself" class="install-btn__play install-btn__view"  data-t="play">Play</div>
           <a href="/" v-else target="_blank"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
         </template>
-
-
       </template>
       <a :href="obj.googlechromeUrl" v-else class="install-btn__install install-btn__view" data-t="install">Install</a>
     </div>
 
     <div class="img-scroll">
       <div class="img-scroll__list" data-value="pic_list">
-        <div class="img-scroll__view">
+        <div class="img-scroll__view"   v-show="!appLoading">
           <img loading="lazy" alt="" src="/app-screenshots-1.png">
         </div>
-        <div class="img-scroll__view">
+        <div class="img-scroll__view"   v-show="!appLoading">
           <img loading="lazy" alt="" src="/app-screenshots-2.png">
         </div>
-        <div class="img-scroll__view">
+        <div class="img-scroll__view"   v-show="!appLoading">
           <img loading="lazy" alt="" src="/app-screenshots-3.png">
         </div>
       </div>
@@ -214,13 +222,13 @@ onMounted(async () => {
     <div class="description">
       <div class="description__title" data-t="about_this_app">About this app</div>
       <img alt="" class="description__right-arrow" loading="lazy" src="./assets/ic_arrow_right-ecd0952f3569bde7f2bd.png">
-      <div class="description__content" data-value="app_desc">{{ obj.name }} is the pioneer of permanent packaging for Android PWA.</div>
+      <div class="description__content" data-value="app_desc">{{ obj.about_app }}</div>
     </div>
 
     <div class="description">
       <div class="description__title" data-t="updated_on" style="margin-bottom: 5px; font-size: 14px">Updated on</div>
       <div class="description__content" id="update-time"></div>
-      <div class="description__label" id="description-label">
+      <div class="description__label" id="description-label" v-show="!appLoading">
             <div class="description__label-item"> {{obj.version}}</div>
       </div>
     </div>
@@ -228,11 +236,11 @@ onMounted(async () => {
     <div class="description">
       <div class="description__title" data-t="data_safety.label">Data safety</div>
       <img alt="" class="description__right-arrow" loading="lazy" src="./assets/ic_arrow_right-ecd0952f3569bde7f2bd.png">
-      <div class="description__content" data-t="data_safety.content">Safety starts with understanding how developers collect and share your data. Data privacy and security practices may vary based on your use, region, and age. The developer provided this information and may update it over time.</div>
+      <div class="description__content" data-t="data_safety.content" v-show="!appLoading">Safety starts with understanding how developers collect and share your data. Data privacy and security practices may vary based on your use, region, and age. The developer provided this information and may update it over time.</div>
       <div class="description__data-safety">
         <div class="description__data-safety__item">
           <div class="item-icon"><img alt="" loading="lazy" src="./assets/ic_data_share-0a04b46579b65b109794.png"></div>
-          <div class="item-content">
+          <div class="item-content" v-show="!appLoading">
             <p data-t="data_safety.share.p1">No data shared with third parties</p>
             <p><ins data-t="learn_more">Learn more</ins> <span data-t="data_safety.share.p2"> about how developers declare sharing</span></p>
           </div>
@@ -241,7 +249,7 @@ onMounted(async () => {
           <div class="item-icon">
             <img alt="" loading="lazy" src="./assets/ic_cloud_upload-12904a12c1aa88f2d082.png">
           </div>
-          <div class="item-content">
+          <div class="item-content" v-show="!appLoading">
             <p data-t="data_safety.upload">This app may collect these data types Location, App activity and 2 others</p>
           </div>
         </div>
@@ -249,7 +257,7 @@ onMounted(async () => {
           <div class="item-icon">
             <img alt="" loading="lazy" src="./assets/ic_lock-216fc77ae7e0db5800f3.png">
           </div>
-            <div class="item-content">
+            <div class="item-content" v-show="!appLoading">
               <p data-t="data_safety.encrypted">Data is encrypted in transit</p>
             </div>
         </div>
@@ -257,23 +265,23 @@ onMounted(async () => {
           <div class="item-icon">
             <img alt="" loading="lazy" src="./assets/ic_delete-bfa3513105268d92d830.png">
           </div>
-          <div class="item-content">
+          <div class="item-content" v-show="!appLoading">
             <p data-t="data_safety.delete">You can request that data be deleted</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="comments" id="rb-comment">
+    <div class="comments" id="rb-comment" v-show="!appLoading">
         <div class="comments__title">Ratings and reviews</div>
         <div class="comments__tips">Ratings and reviews are verified and from people who use the same type of device that you use</div>
         
         
         <div class="comments__scoring">
           <div class="comments__scoring-num">
-            <div class="comments__scoring-points">5.0</div>
+            <div class="comments__scoring-points">{{ obj.star }}</div>
             <div class="comments__scoring-star"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 14px; height: 14px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 14px; height: 14px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 14px; height: 14px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 14px; height: 14px; margin-right: 2px;"><img class="star" src="./assets/ic_full_star-49a0f4841cc9a5253f5d.png" style="width: 14px; height: 14px; margin-right: 2px;"></div>
-            <div class="comments__scoring-people">124</div>
+            <div class="comments__scoring-people">{{ obj.reviews }}</div>
           </div>
           <div class="comments__scoring-content">
         <div class="comments__scoring-item">5
@@ -311,7 +319,7 @@ onMounted(async () => {
           <div class="comments__br"></div>
     </div>
 
-    <div class="rb-menus" id="rb-menus">
+    <div class="rb-menus" id="rb-menus" v-show="!appLoading">
       <div class="menus__placeholder"></div>
       <div class="menus__body" id="menus">
         <div class="menus__item active">
