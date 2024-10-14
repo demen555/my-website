@@ -13,6 +13,12 @@ const showInstall = ref(false)
 const appLoading = ref(true)
 const obj = ref({})
 const isPC = window.icPC
+const ismac = window.ismac
+// 100 倒计时
+const percentage = ref(0); // 创建响应式变量
+const isRunning = ref(false); // 用于跟踪进度条是否正在运行
+let interval = null; // 定时器
+
 
 showLoadingToast({
     duration: 3500,
@@ -62,6 +68,7 @@ if(isChrome){
   if( localStorage.getItem('installFinish') == "1" ){
     showInstall.value = true
     installFinish.value = true
+    percentage.value = 100
   }
 }else{
   showInstall.value = false
@@ -72,17 +79,13 @@ if(window.icPC){
   rbqrcode.value = true
 }
 
-
-
-
-
-
 function addHomePage(){
   window.deferredPrompt.prompt();
   window.deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
           localStorage.setItem('installFinish', "1")
           start()
+          startProgress()
       } else {
           console.log('User dismissed the A2HS prompt');
       }
@@ -116,6 +119,28 @@ function pcOpenself(){
 }
 
 
+
+const startProgress = () => {
+  if (isRunning.value) return; // 如果正在运行，则不再启动
+
+  isRunning.value = true; // 设置为正在运行
+  percentage.value = 0; // 重置百分比
+
+  const totalDuration = 10000; // 10秒
+  const incrementTime = 100; // 每次更新的时间
+  const incrementValue = 100 / (totalDuration / incrementTime); // 每次增加的百分比
+
+  interval = setInterval(() => {
+    if (percentage.value < 100) {
+      percentage.value += incrementValue; // 增加百分比
+    } else {
+      percentage.value = 100; // 确保最后是 100%
+      clearInterval(interval); // 达到 100% 时停止
+      isRunning.value = false; // 更新状态
+    }
+  }, incrementTime); // 每 100 毫秒更新一次
+};
+
 </script>
 
 <style scoped>
@@ -131,11 +156,16 @@ function pcOpenself(){
         <img alt="" class="header__icon--img" data-value="app_icon" loading="lazy" src="/logo.svg">
         <div v-show="startTime" class="header__icon--loading" id="iconLoading"><svg viewBox="25 25 50 50"><circle cx="50" cy="50" fill="none" r="20"></circle></svg></div>
       </div>
-      <div class="header__info">
+      <div class="header__info" v-show="!appLoading">
         <div class="header__info-title">
           <h1 data-value="app_name">{{ obj.name }}</h1>
-        </div>
-        <p class="header__info-description" data-value="company_name">{{ obj.description }}</p>
+        </div> 
+        <template v-if="!installFinish">
+          <p class="header__info-percentage" v-if="percentage > 0"> {{ percentage }}% </p>
+          <p class="header__info-description" v-else data-value="company_name">{{ obj.description }}</p>
+        </template>
+        <p class="header__info-percentage" v-else> {{ percentage }}% </p>
+        
       </div>
     </div>
 
@@ -185,24 +215,41 @@ function pcOpenself(){
     </div>
 
     <div class="install-btn shiny-btn" id="install-btn" >
-      <template v-if="showInstall && !appLoading">
-        <div :class="['install-btn__ing', { 'install-btn__ing_loading': startTime }]" @click="addHomePage" v-if="!installFinish">
-          <div class="install-btn__ing__rapid">
-            <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
-            <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
+
+      <template v-if="ismac">
+        <a  v-if="!appLoading" :href="obj.pwaUrl" target="_blank" class="install-btn__install install-btn__view" data-t="install">play</a>
+        <a :href="obj.googlechromeUrl" v-else class="install-btn__install install-btn__view" data-t="install">Install</a>
+      </template>
+
+      <template v-else>
+        <template v-if="showInstall && !appLoading">
+          <div :class="['install-btn__ing', { 'install-btn__ing_loading': startTime }]" @click="addHomePage" v-if="!installFinish">
+            <div class="install-btn__ing__rapid">
+              <img alt="" class="ic_x" loading="lazy" src="./assets/ic_sd-0f0ff5464df5f1e88241.png"> 
+              <span class="rapid_install" data-t="rapid_install">Rapid Install</span>
+            </div>
+            <div class="install-btn__ing__countdown">
+              <span data-t="download_in">Download within</span> <span class="countdown-num">
+                <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
+            </div>
           </div>
-          <div class="install-btn__ing__countdown">
-            <span data-t="download_in">Download within</span> <span class="countdown-num">
-              <van-count-down @finish="onFinish" :auto-start="false" ref="countDown"  format="ss" :time="10000" /></span> &nbsp;s
-          </div>
-        </div>
-        
+          
+          <template v-else>
+            <div v-if="isPC" @click="pcOpenself" class="install-btn__play install-btn__view"  data-t="play">Play</div>
+            <a href="/" v-else target="_blank"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
+          </template>
+        </template>
         <template v-else>
-          <div v-if="isPC" @click="pcOpenself" class="install-btn__play install-btn__view"  data-t="play">Play</div>
-          <a href="/" v-else target="_blank"  class="install-btn__play install-btn__view"  data-t="play">Play</a>
+          <a  v-if="ismac && !appLoading" :href="obj.pwaUrl" target="_blank" class="install-btn__install install-btn__view" data-t="install">play</a>
+          <a :href="obj.googlechromeUrl" v-else class="install-btn__install install-btn__view" data-t="install">Install</a>
         </template>
       </template>
-      <a :href="obj.googlechromeUrl" v-else class="install-btn__install install-btn__view" data-t="install">Install</a>
+
+        
+        
+
+
+
     </div>
 
     <div class="img-scroll">

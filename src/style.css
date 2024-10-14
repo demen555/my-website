@@ -194,6 +194,9 @@ body {
   line-height: 23px;
   margin-bottom: 5px
 }
+.header__info-percentage{
+  color: #000000;
+}
 
 .header__info-progress {
   color: #333;

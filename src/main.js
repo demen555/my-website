@@ -8,10 +8,12 @@ var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;   //判断�
 var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);     //判断是否是 iOS终端
 var icPC = !u.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
 var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+var ismac = navigator.platform.toLowerCase().includes('mac');
 window.isAndroid = isAndroid
 window.isIOS = isIOS
 window.isChrome = isChrome
 window.icPC = icPC
+window.ismac = ismac
 
 let isPwa = false
 isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
