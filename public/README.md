@@ -26,5 +26,4 @@ logo：
 logo.svg 
 
 favicon：
-favicon.svg
 favicon.ico
